@@ -2,6 +2,8 @@
 /**
  * программа для сбора данных о движениях судов с сервиса marinetraffic.com
  * разработана в академических целях, использовать на свой страх и риск
+ *
+ * @link https://github.com/maksim-trofimov/marinetraffic-parser
  * 
  * @copyright Maksim Trofimov <maksim.trofimov@vvsu.ru>
  * 
