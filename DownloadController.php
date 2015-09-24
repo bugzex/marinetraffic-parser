@@ -58,6 +58,8 @@ class DownloadController extends Controller
 		14 => 'col14',			// 0
 		15 => 'col15',			// 0
 		16 => 'port',			// YUZH LIFLYANDIYA
+        17 => 'col17',          // неизвестное поле: целое число
+        18 => 'col18',          // неизвестное поле: целое число
 	);
 	
     public function actionIndex($url = null, $sw_x = 130.0, $sw_y = 43.0, $ne_x = 133.0, $ne_y = 43.5, $zoom = 12, $time_zone = 'Asia/Vladivostok', $sleep_seconds = 10)
