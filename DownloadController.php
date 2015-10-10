@@ -74,7 +74,15 @@ class DownloadController extends Controller
 		// url ссылается на страницу входа, но, по сути, можно использовать любую другую
 		// в сервисе в url содержатся двоеточия - это разделитель ключа и значения параметра
 		$url = 'http://www.marinetraffic.com/ru/users/ajax_user_menu/home:1';
+
 		$requrest = new \HTTP_Request($url, $request_params);
+
+		// использование прокси: http://pear.php.net/manual/ru/package.http.http-request.proxy-auth.php
+		//$requrest->setProxy('proxy.example.com', 8080, 'johndoe', 'foo');
+
+		// проверка работы скрипта через прокси из списка: http://proxylist.hidemyass.com/2
+		//$requrest->setProxy('217.175.34.170', 8080);
+
 		$requrest->sendRequest();
 		$requrest->disconnect();
 		$cookies = $requrest->getResponseCookies();
