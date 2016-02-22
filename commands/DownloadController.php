@@ -37,6 +37,9 @@ require_once 'Request.php';
  */
 class DownloadController extends Controller
 {
+    /** @var int Номер итерации попытки получения и записи данных */
+    private static $iteration = 1;
+
     public function actionIndex(
         $url = null,
         $sw_x = 130.0,
@@ -188,10 +191,12 @@ class DownloadController extends Controller
                 // -- -- --
             }
 
-            // выталкиваем сообщения в стандартный вывод и делаем паузу
+            // -- выталкиваем сообщения в стандартный вывод и делаем паузу
+            echo 'Закончена итерация #: ' . (static::$iteration++)  . PHP_EOL;
             echo 'Жду ' . $sleep_seconds . ' секунд...' . PHP_EOL;
             ob_flush();
             sleep($sleep_seconds);
+            // -- -- --
         }
     }
 }
