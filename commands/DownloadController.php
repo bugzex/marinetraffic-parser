@@ -157,7 +157,7 @@ class DownloadController extends Controller {
                 if ($marine === null) {
                     $marine = new Marine();
                     $marine->identifier = $marinetrafficResult->ship_id;
-                    $marine->name = $marinetrafficResult->shipname;
+                    $marine->name = strtoupper($marinetrafficResult->shipname);
                     $marine->type = $marinetrafficResult->shiptype;
                     $marine->flag = $marinetrafficResult->flag;
                     $marine->length = $marinetrafficResult->length;
