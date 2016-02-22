@@ -56,15 +56,9 @@ class DownloadController extends Controller
         // -- устанавливаем кодировку, чтобы в консоли отображалась кирилица корректно (для windows)
         ob_start('ob_iconv_handler');
 
-        $options = [
-            'iconv.input_encoding' => 'cp866',
-            'iconv.output_encoding' => 'cp866',
-            'iconv.internal_encoding' => 'UTF-8',
-        ];
-
-        foreach ($options as $k => $v) {
-            ini_set($k, $v);
-        }
+        ini_set('iconv.input_encoding', 'cp866');
+        ini_set('iconv.output_encoding', 'cp866');
+        ini_set('iconv.internal_encoding', 'UTF-8');
         // -- -- --
 
         // параметры http-запроса
