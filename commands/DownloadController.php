@@ -35,11 +35,23 @@ require_once 'Request.php';
  * контроллер загрузки данных
  * @todo сопоставить поля, если неверно назначены
  */
-class DownloadController extends Controller
-{
+class DownloadController extends Controller {
+
     /** @var int Номер итерации попытки получения и записи данных */
     private static $iteration = 1;
 
+    /**
+     * Запустить загрузку и сохранение данных с сервиса.
+     *
+     * @param string $url
+     * @param float $sw_x
+     * @param float $sw_y
+     * @param float $ne_x
+     * @param float $ne_y
+     * @param int $zoom
+     * @param string $time_zone
+     * @param int $sleep_seconds
+     */
     public function actionIndex(
         $url = 'http://www.marinetraffic.com/map/getDataJson',
         $sw_x = 130.0,
@@ -96,8 +108,8 @@ class DownloadController extends Controller
 
             // -- пропускаем итерацию при недолжном ответе
             if ($requrest->getResponseCode() !== 200 || empty($requrest->getResponseBody())) {
-                echo 'Сервер сервиса вернул ошибку или пустые данные (возможно сервис недоступен).' . PHP_EOL;
-                echo 'Пробую повторно.' . PHP_EOL;
+                static::log('Сервер сервиса вернул ошибку или пустые данные (возможно сервис недоступен).');
+                static::log('Пробую повторно.');
                 continue;
             }
             // -- -- --
@@ -105,15 +117,15 @@ class DownloadController extends Controller
             // -- декодируем json-объект в массив
             $decodeResult = json_decode($requrest->getResponseBody());
             if (($decodeResult instanceof \stdClass) === false) {
-                echo 'Декодированные данные оказались другого типа (нужно менять код программы).' . PHP_EOL;
-                echo 'Выхожу.' . PHP_EOL;
+                static::log('Декодированные данные оказались другого типа (нужно менять код программы).');
+                static::log('Выхожу.');
                 return;
             } elseif (!isset($decodeResult->data->rows) || !is_array($decodeResult->data->rows)) {
-                echo 'Декодированные данные о суднах и их движении имеют другой тип или изменился формат данных (нужно менять код программы).' . PHP_EOL;
-                echo 'Выхожу.' . PHP_EOL;
+                static::log('Декодированные данные о суднах и их движении имеют другой тип или изменился формат данных (нужно менять код программы).');
+                static::log('Выхожу.');
                 return;
             } else {
-                echo 'Всего будет обработано ' . count($decodeResult->data->rows) . ' записей.' . PHP_EOL;
+                static::log('Всего будет обработано ' . count($decodeResult->data->rows) . ' записей.');
             }
             // -- -- --
 
@@ -131,8 +143,8 @@ class DownloadController extends Controller
                 $marinetrafficResult = new MarinetrafficResult();
                 $marinetrafficResult->setAttributes($data);
                 if ($marinetrafficResult->validate() === false) {
-                    echo 'Ошибка при загрузки в прокси-объект данных, полученных из запроса: возможно изменился формат данных.' . PHP_EOL;
-                    echo 'Выхожу.' . PHP_EOL;
+                    static::log('Ошибка при загрузки в прокси-объект данных, полученных из запроса: возможно изменился формат данных.');
+                    static::log('Выхожу.');
                     return;
                 }
                 // -- -- --
@@ -156,10 +168,10 @@ class DownloadController extends Controller
                     $marine->col15 = $marinetrafficResult->rot;
 
                     if ($marine->save()) {
-                        echo 'Добавлено новое судно: ' . $marine->name . PHP_EOL;
+                        static::log('Добавлено новое судно: ' . $marine->name);
                     } else {
-                        echo 'Неудалось добавить новое судно из-за ошибок:' . PHP_EOL;
-                        echo print_r($marine->getErrors(), true) . PHP_EOL;
+                        static::log('Неудалось добавить новое судно из-за ошибок:');
+                        static::log(print_r($marine->getErrors(), true));
                     }
                 }
                 // -- -- --
@@ -177,21 +189,30 @@ class DownloadController extends Controller
                     $track->date_add = date('Y-m-d_H:i');
 
                     if ($track->save()) {
-                        echo 'Добавлено положение судна: ' . $marine->name . PHP_EOL;
+                        static::log('Добавлено положение судна: ' . $marine->name);
                     } else {
-                        echo 'Неудалось добавить положение судна из-за ошибок: ' . PHP_EOL;
-                        echo print_r($track->getErrors(), true) . PHP_EOL;
+                        static::log('Неудалось добавить положение судна из-за ошибок: ');
+                        static::log(print_r($track->getErrors(), true));
                     }
                 }
                 // -- -- --
             }
 
-            // -- выталкиваем сообщения в стандартный вывод и делаем паузу
-            echo 'Закончена итерация #: ' . (static::$iteration++)  . PHP_EOL;
-            echo 'Жду ' . $sleep_seconds . ' секунд...' . PHP_EOL;
-            ob_flush();
+            // -- сообщаем о законченной итерации и делаем паузу
+            static::log('Закончена итерация #: ' . (static::$iteration++));
+            static::log('Жду ' . $sleep_seconds . ' секунд...');
             sleep($sleep_seconds);
             // -- -- --
         }
+    }
+
+    /**
+     * Добавить в лог сообщение (вывести на консоль).
+     *
+     * @param string $message
+     */
+    private static function log($message) {
+        echo $message . PHP_EOL;
+        ob_flush();
     }
 }
