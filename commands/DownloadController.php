@@ -41,7 +41,7 @@ class DownloadController extends Controller
     private static $iteration = 1;
 
     public function actionIndex(
-        $url = null,
+        $url = 'http://www.marinetraffic.com/map/getDataJson',
         $sw_x = 130.0,
         $sw_y = 43.0,
         $ne_x = 133.0,
@@ -67,9 +67,9 @@ class DownloadController extends Controller
         // этим запросом получаем индентификатор сессии, который будем использовать при последующих запросах к сервису
         // url ссылается на страницу входа, но, по сути, можно использовать любую другую
         // в сервисе в url содержатся двоеточия - это разделитель ключа и значения параметра
-        $url = 'http://www.marinetraffic.com/ru/users/ajax_user_menu/home:1';
+        $loginUrl = 'http://www.marinetraffic.com/ru/users/ajax_user_menu/home:1';
 
-        $requrest = new \HTTP_Request($url, $request_params);
+        $requrest = new \HTTP_Request($loginUrl, $request_params);
 
         // использование прокси: http://pear.php.net/manual/ru/package.http.http-request.proxy-auth.php
         //$requrest->setProxy('proxy.example.com', 8080, 'johndoe', 'foo');
@@ -82,12 +82,13 @@ class DownloadController extends Controller
         $cookies = $requrest->getResponseCookies();
         $session_id = $cookies[0]['value'];
 
+        $requrestUrl = "{$url}/sw_x:{$sw_x}/sw_y:{$sw_y}/ne_x:{$ne_x}/ne_y:{$ne_y}/zoom:{$zoom}/fleet:/station:0";
+
         // бесконечный цикл для сбора данных
-        $url = "http://www.marinetraffic.com/map/getDataJson/sw_x:{$sw_x}/sw_y:{$sw_y}/ne_x:{$ne_x}/ne_y:{$ne_y}/zoom:{$zoom}/fleet:/station:0";
         while (true) {
             // -- делаем запрос на получение данных
-            $requrest = new \HTTP_Request($url, $request_params);
-            $requrest->addHeader('Referer', $url);
+            $requrest = new \HTTP_Request($requrestUrl, $request_params);
+            $requrest->addHeader('Referer', $requrestUrl);
             $requrest->addCookie('CAKEPHP', $session_id);
             $requrest->sendRequest();
             $requrest->disconnect();
