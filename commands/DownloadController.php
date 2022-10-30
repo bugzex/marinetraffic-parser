@@ -1,14 +1,13 @@
 <?php
 /**
- * Программа для сбора данных о движениях судов с сервиса marinetraffic.com.
- * Разработана в академических целях; использовать на свой страх и риск.
+ * The data-crawler for collecting data of ships movements from marinetraffic.com website.
  *
- * @link https://github.com/maksim-trofimov/marinetraffic-parser
+ * @link https://github.com/bugzex/marinetraffic-parser
  *
- * @copyright Maksim Trofimov <maksim.trofimov@vvsu.ru>
+ * @copyright bugzex <bugzex@ya.ru>
  *
  * @author Viktor Grinyak <Viktor.Grinyak@vvsu.ru>
- * @author Maksim Trofimov <maksim.trofimov@vvsu.ru>
+ * @author bugzex <bugzex@ya.ru>
  * @author Boris Golovchenko <boris.golovchenko@vvsu.ru>
  *
  * @license The MIT License (MIT)
@@ -21,19 +20,18 @@ use app\models\MarinetrafficResult;
 use app\models\Track;
 use yii\console\Controller;
 
-// todo: разместить библиотеки в vendor
+// TODO: https://github.com/bugzex/marinetraffic-parser/issues/1
 set_include_path(
     get_include_path() . PATH_SEPARATOR .
     dirname(__FILE__) . '/lib' . PATH_SEPARATOR .
     dirname(__FILE__) . '/lib/HTTP'
 );
-
-// todo: библиотека устарела
 require_once 'Request.php';
 
 /**
- * контроллер загрузки данных
- * @todo сопоставить поля, если неверно назначены
+ * The controller for collecting data.
+ *
+ * @author bugzex <bugzex@ya.ru>
  */
 class DownloadController extends Controller {
 
@@ -51,6 +49,8 @@ class DownloadController extends Controller {
      * @param int $zoom
      * @param string $time_zone
      * @param int $sleep_seconds
+     *
+     * @author bugzex <bugzex@ya.ru>
      */
     public function actionIndex(
         $url = 'http://www.marinetraffic.com/map/getDataJson',
@@ -65,7 +65,7 @@ class DownloadController extends Controller {
         // устанавливаем временную зону по-умолчанию
         date_default_timezone_set($time_zone);
 
-        // -- устанавливаем кодировку, чтобы в консоли отображалась кирилица корректно (для windows)
+        // -- устанавливаем кодировку, чтобы в консоли отображалась кирилица корректно (для windows), TODO: https://github.com/bugzex/marinetraffic-parser/issues/2
         ob_start('ob_iconv_handler');
 
         ini_set('iconv.input_encoding', 'cp866');
@@ -210,6 +210,8 @@ class DownloadController extends Controller {
      * Добавить в лог сообщение (вывести на консоль).
      *
      * @param string $message
+     *
+     * @author bugzex <bugzex@ya.ru>
      */
     private static function log($message) {
         echo $message . PHP_EOL;
